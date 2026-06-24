@@ -1,0 +1,4 @@
+openpyxl
+reportlab
+pywin32
+pyinstaller
