@@ -1,0 +1,46 @@
+name: Build BhugtanEase EXE and Installer
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Code checkout karo
+        uses: actions/checkout@v4
+      - name: Python 3.8 setup karo
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+      - name: Pip aur libraries install karo
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: pywin32 post-install
+        run: |
+          python -c "import win32com.client" 2>$null
+          python Scripts\pywin32_postinstall.py -install 2>$null
+        continue-on-error: true
+      - name: EXE banao (PyInstaller)
+        run: pyinstaller --noconfirm --onefile --windowed --name BhugtanEase --icon BhugtanEase.ico --hidden-import win32print --hidden-import win32api --hidden-import openpyxl --hidden-import reportlab --collect-submodules openpyxl --collect-submodules reportlab BhugtanEase_Final.pyw
+      - name: EXE ko root folder mein copy karo
+        run: copy dist\BhugtanEase.exe BhugtanEase.exe
+      - name: Inno Setup install karo
+        run: choco install innosetup -y --no-progress
+      - name: Installer banao
+        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss'
+      - name: EXE upload karo
+        uses: actions/upload-artifact@v4
+        with:
+          name: BhugtanEase-EXE
+          path: dist/BhugtanEase.exe
+      - name: Installer upload karo
+        uses: actions/upload-artifact@v4
+        with:
+          name: BhugtanEase-Setup-Installer
+          path: installer_output/BhugtanEase_Setup.exe
