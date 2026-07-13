@@ -1,12 +1,10 @@
 name: Build BhugtanEase EXE and Installer
-
 on:
   push:
     branches:
       - main
       - master
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: windows-latest
@@ -27,7 +25,7 @@ jobs:
           python Scripts\pywin32_postinstall.py -install 2>$null
         continue-on-error: true
       - name: EXE banao (PyInstaller)
-        run: pyinstaller --noconfirm --onefile --windowed --name BhugtanEase --icon BhugtanEase.ico --hidden-import win32print --hidden-import win32api --hidden-import openpyxl --hidden-import reportlab --collect-submodules openpyxl --collect-submodules reportlab BhugtanEase_Final.pyw
+        run: pyinstaller --noconfirm --onefile --windowed --name BhugtanEase --icon BhugtanEase.ico --hidden-import win32print --hidden-import win32api --hidden-import openpyxl --hidden-import et_xmlfile --hidden-import reportlab --collect-submodules openpyxl --collect-submodules reportlab BhugtanEase_Final.pyw
       - name: EXE ko root folder mein copy karo
         run: copy dist\BhugtanEase.exe BhugtanEase.exe
       - name: Inno Setup install karo
